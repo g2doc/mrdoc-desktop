@@ -2,10 +2,10 @@
   <!-- <el-container style="background-color: #f5f5f5;height:100%;"> -->
     <el-row style="height:100%">
       <!-- 文集列表 -->
-      <el-col :span="6" class="project-list-container" v-loading="project_list_loading">
-          <div class="project-list-name">文集列表</div>
-          <el-scrollbar class="item-scrollbar">
-            <div class="project-item" v-for="(item) in project_list" :key="item.id" @click="getProjectDocs(item.id)">
+      <el-col :span="5" class="project-list-container">
+          <div class="project-list-name">文集列表 <i class="refresh-project-list" :class="refresh_project_icon" @click="refreshProjectList()"></i></div>
+          <el-scrollbar class="item-scrollbar" v-loading="project_list_loading">
+            <div class="project-item" v-for="(item) in project_list" :key="item.id" @click="getProjectDocs(item.id,item.name)">
               <i class="el-icon-folder-opened"></i> {{item.name}}
             </div>
           </el-scrollbar>
@@ -24,22 +24,22 @@
           </div>
           <el-scrollbar class="item-scrollbar">
             <div v-for="(item) in current_doc_list" :key="item.id" class="doc-item" @click="getDoc(item.id)">
-              <i class="el-icon-tickets"></i> {{item.name}}
+              <i class="el-icon-tickets"></i>
+               {{item.name}}
               <div class="doc-item-time">更新于：{{item.create_time | dateFomart}}</div>
             </div>
           </el-scrollbar>
           
       </el-col>
       <!-- 编辑器 -->
-      <el-col :span="12" class="editor-container" v-if="noDoc">
+      <el-col :span="13" class="editor-container" v-if="noDoc">
         <el-empty description="处处皆尘埃" ></el-empty>
       </el-col>
       <el-col :span="12" class="editor-container" v-else v-loading="doc_loading">
         <div class="doc-info">
           <el-breadcrumb separator="/">
-            <el-breadcrumb-item>测试文集</el-breadcrumb-item>
-            <el-breadcrumb-item>部署手册</el-breadcrumb-item>
-            <el-breadcrumb-item>Linux部署指南</el-breadcrumb-item>
+            <el-breadcrumb-item>{{current_project}}</el-breadcrumb-item>
+            <el-breadcrumb-item>{{current_doc.name}}</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
         <div class="editor">
@@ -52,7 +52,7 @@
 
 <script>
 import SimpleMDE from 'simplemde';
-// import marked from 'marked';
+import { marked } from 'marked';
 
 export default {
   name: 'Home',
@@ -64,6 +64,7 @@ export default {
       project_list : [],// 文集列表
       project_list_loading:true, // 文集列表是否加载
       current_project:"", // 当前文集
+      refresh_project_icon:"el-icon-refresh", 
       noDocList:true, // 文档列表状态
       current_doc_list : [], // 当前文档列表
       doc_list_loading:false, // 文档列表是否加载
@@ -78,7 +79,9 @@ export default {
 
   },
   mounted() {
-    this.init()
+    this.init();
+    // 设置是否渲染输入的html
+      marked.setOptions({sanitize: true});
   },
   methods: {
     // 页面初始化
@@ -112,8 +115,10 @@ export default {
         })
     },
     // 获取指定文集的文档列表
-    getProjectDocs(id){
+    getProjectDocs(id,name){
       this.doc_list_loading = true;
+      this.current_project = name;
+      this.current_doc = ""
       fetch(this.host_url + '/api/get_docs/?token='+this.user_token+"&pid="+id)
         .then((r)=>{
             return r.json()
@@ -153,6 +158,13 @@ export default {
             this.$message("获取文档异常!")
         })
     },
+    // 刷新文集列表
+    refreshProjectList(){
+      this.refresh_project_icon = "el-icon-loading";
+      this.project_list_loading = true;
+      this.getProjectList();
+      this.refresh_project_icon = 'el-icon-refresh'
+    }
   },
   filters:{
     // 日期格式化
@@ -194,6 +206,9 @@ export default {
     padding-bottom: 10px;
     margin-bottom: 10px;
   }
+  .refresh-project-list{
+    cursor: pointer;
+  }
   .project-item{
     padding: 5px;
     /* margin-bottom: 5px; */
@@ -231,9 +246,12 @@ export default {
   }
   .editor{
     margin-top: 15px;
-    height: calc(100% - 80px);
+    height: calc(100% - 50px);
   }
   .CodeMirror{
-    height: calc(100% - 100px);
+    height: calc(100% - 50px);
+  }
+  .CodeMirror .cm-spell-error:not(.cm-url):not(.cm-comment):not(.cm-tag):not(.cm-word){
+    background: none;
   }
 </style>
