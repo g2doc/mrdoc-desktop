@@ -1,18 +1,41 @@
 # mrdoc-desktop
 
-## Project setup
+基于 Electron 开发的 MrDoc 桌面客户端。
+
+## 项目初始化
+
 ```
 yarn install
 ```
 
-### Compiles and hot-reloads for development
+或
+
 ```
-yarn serve
+npm install
 ```
 
-### Compiles and minifies for production
+## 运行项目
+
 ```
-yarn build
+npm run electron.serve
+```
+
+或
+
+```
+yarn run electron.serve
+```
+
+## 打包项目
+
+```
+npm run electron:build
+```
+
+或
+
+```
+yarn run electron:build
 ```
 
 ### Lints and fixes files
