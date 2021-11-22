@@ -26,10 +26,9 @@
             <div v-for="(item) in current_doc_list" :key="item.id" class="doc-item" @click="getDoc(item.id)">
               <i class="el-icon-tickets"></i>
                {{item.name}}
-              <div class="doc-item-time">更新于：{{item.create_time | dateFomart}}</div>
+              <div class="doc-item-time">{{item.create_time | dateFomart}}</div>
             </div>
           </el-scrollbar>
-          
       </el-col>
       <!-- 编辑器 -->
       <el-col :span="13" class="editor-container" v-if="noDoc">
@@ -51,6 +50,7 @@
 </template>
 
 <script>
+import Store from 'electron-store';
 import SimpleMDE from 'simplemde';
 import { marked } from 'marked';
 
@@ -61,6 +61,7 @@ export default {
   },
   data() {
     return {
+      store:new Store(),
       project_list : [],// 文集列表
       project_list_loading:true, // 文集列表是否加载
       current_project:"", // 当前文集
@@ -71,8 +72,8 @@ export default {
       current_doc:"", // 当前文档
       doc_loading:false,
       noDoc:false, // 文档状态
-      host_url:'http://192.168.0.101',
-      user_token : '62f8de856fcbefc554d3162637ba167386228adad381656873cc02af',
+      host_url:'',
+      user_token : '',
     }
   },
   watch: {
@@ -86,6 +87,9 @@ export default {
   methods: {
     // 页面初始化
     init(){
+        // 读取配置 
+        this.host_url = this.store.get('mrdocUrl');
+        this.user_token = this.store.get('mrdocUserToken');
         this.getProjectList();
         this.initEditor()
     },
@@ -119,6 +123,7 @@ export default {
       this.doc_list_loading = true;
       this.current_project = name;
       this.current_doc = ""
+      this.simplemde.value("");
       fetch(this.host_url + '/api/get_docs/?token='+this.user_token+"&pid="+id)
         .then((r)=>{
             return r.json()

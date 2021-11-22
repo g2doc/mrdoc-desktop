@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, Menu } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -21,9 +21,58 @@ async function createWindow() {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
-      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
+      // nodeIntegration: true,
+      contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+      // contextIsolation:false,
+      enableRemoteModule: true,
     }
   })
+
+  // 创建菜单
+  const MenuItem = [
+    {
+      label:"文件",
+      submenu:[
+        {
+          label:"配置",
+          click(){
+            win.webContents.send('href','Options')
+          }
+        },
+        {
+          label:"退出",
+          click(){
+            app.quit()
+          }
+        }
+      ]
+    },
+    {
+      label:"帮助",
+      submenu:[
+        {
+          label:"检查更新",
+          click(){
+            
+          }
+        },
+        {
+          label:"问题反馈",
+          click(){
+
+          }
+        },
+        {
+          label:"关于",
+          click(){
+
+          },
+        }
+      ]
+    }
+  ];
+  
+  Menu.setApplicationMenu(Menu.buildFromTemplate(MenuItem))
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
