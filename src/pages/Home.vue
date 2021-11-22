@@ -4,11 +4,16 @@
       <!-- 文集列表 -->
       <el-col :span="5" class="project-list-container">
           <div class="project-list-name">文集列表 <i class="refresh-project-list" :class="refresh_project_icon" @click="refreshProjectList()"></i></div>
+          <div class="create-btn-div">
+            <el-button type="primary" size="small" round>新建文集</el-button>
+            <el-button type="primary" size="small" round>新建文档</el-button>
+          </div>
           <el-scrollbar class="item-scrollbar" v-loading="project_list_loading">
-            <div class="project-item" v-for="(item) in project_list" :key="item.id" @click="getProjectDocs(item.id,item.name)">
+            <div class="project-item" :class="current_project==item.name?'current-project':''" v-for="(item) in project_list" :key="item.id" @click="getProjectDocs(item.id,item.name)">
               <i class="el-icon-folder-opened"></i> {{item.name}}
             </div>
           </el-scrollbar>
+          <div class="project-list-bottom">合计：{{projectCnt}} 个文集</div>
       </el-col>
       <!-- 文档列表 -->
       <el-col :span="6" class="doc-list-container" v-if="noDocList">
@@ -31,10 +36,7 @@
           </el-scrollbar>
       </el-col>
       <!-- 编辑器 -->
-      <el-col :span="13" class="editor-container" v-if="noDoc">
-        <el-empty description="处处皆尘埃" ></el-empty>
-      </el-col>
-      <el-col :span="12" class="editor-container" v-else v-loading="doc_loading">
+      <el-col :span="13" class="editor-container" v-loading="doc_loading">
         <div class="doc-info">
           <el-breadcrumb separator="/">
             <el-breadcrumb-item>{{current_project}}</el-breadcrumb-item>
@@ -59,6 +61,11 @@ export default {
   components: {
 
   },
+  computed:{
+    projectCnt(){
+      return this.project_list.length;
+    }
+  },
   data() {
     return {
       store:new Store(),
@@ -71,7 +78,7 @@ export default {
       doc_list_loading:false, // 文档列表是否加载
       current_doc:"", // 当前文档
       doc_loading:false,
-      noDoc:false, // 文档状态
+      noDoc:true, // 文档状态
       host_url:'',
       user_token : '',
     }
@@ -91,7 +98,7 @@ export default {
         this.host_url = this.store.get('mrdocUrl');
         this.user_token = this.store.get('mrdocUserToken');
         this.getProjectList();
-        this.initEditor()
+        this.initEditor();
     },
     // 初始化编辑器
     initEditor(){
@@ -109,8 +116,10 @@ export default {
         .then(r=>{
             console.log(r)
             if(r.status){
+                this.current_project = '';
                 this.project_list = r.data;
                 this.project_list_loading = false;
+                this.noDocList = true;
             }else{
                 this.$message("获取文集列表失败")
             }
@@ -123,6 +132,7 @@ export default {
       this.doc_list_loading = true;
       this.current_project = name;
       this.current_doc = ""
+      this.noDoc = true;
       this.simplemde.value("");
       fetch(this.host_url + '/api/get_docs/?token='+this.user_token+"&pid="+id)
         .then((r)=>{
@@ -153,8 +163,7 @@ export default {
             if(r.status){
                 this.current_doc = r.data;
                 this.doc_loading = false;
-                this.noDoc = false;
-                this.simplemde.value(r.data.md_content)
+                this.simplemde.value(r.data.md_content);
             }else{
                 this.$message("获取文档失败")
             }
@@ -194,7 +203,7 @@ export default {
     overflow-x: hidden;
   }
   .item-scrollbar{
-    height: calc(100% - 50px);
+    height: calc(100% - 100px);
     /* overflow: scroll; */
   }
   .project-list-container{
@@ -209,7 +218,10 @@ export default {
     font-size:16px;
     font-weight: 700;
     padding-bottom: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
+  }
+  .current-project{
+    font-weight: 700;
   }
   .refresh-project-list{
     cursor: pointer;
@@ -221,6 +233,15 @@ export default {
   .project-item:hover{
     background-color: #f9f9f9;
     cursor: pointer;
+  }
+  .create-btn-div{
+    margin-bottom: 5px;
+    text-align: center;
+  }
+  .project-list-bottom{
+    margin-left: 5px;
+    font-size: 12px;
+    /* text-align: center; */
   }
   .doc-list-container{
     height: 100%;
