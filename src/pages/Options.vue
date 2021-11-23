@@ -74,12 +74,9 @@
     }
   }
 </script>
-<style>
-    html,body,#app{
-    height: 90%;
-    }
+<style scope>
     .container{
-        margin: 10px;
+        padding: 10px;
     }
     .title{
         margin-bottom: 10px;

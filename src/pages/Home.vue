@@ -207,14 +207,15 @@ export default {
       if(this.createProjectForm.name == ''){
         this.$message({message:"文集名称不能为空！",type:"error"})
       }else{
+        let formData = new FormData();
+        for (var key in this.createProjectForm)
+        {
+            formData.append(key,this.createProjectForm[key]);
+        }
         fetch(this.host_url + '/api/create_project/?token='+this.user_token,{
           method:'POST',
           mode:'cors',
-          body:JSON.stringify({
-            name:this.createProjectForm.name,
-            desc:this.createProjectForm.desc,
-            role:this.createProjectForm.role
-          })
+          body:formData
         })
         .then((r)=>{
           return r.json()
