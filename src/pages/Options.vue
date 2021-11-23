@@ -75,6 +75,9 @@
   }
 </script>
 <style>
+    html,body,#app{
+    height: 90%;
+    }
     .container{
         margin: 10px;
     }
