@@ -5,7 +5,7 @@
         <div class="project-list-name">文集列表 <i class="refresh-project-list" :class="refresh_project_icon" @click="refreshProjectList()"></i></div>
         <div class="create-btn-div">
           <el-button type="primary" size="small" round @click="dialogCreateProjectVisible = true">新建文集</el-button>
-          <el-button type="primary" size="small" round>新建文档</el-button>
+          <!-- <el-button type="primary" size="small" round>新建文档</el-button> -->
         </div>
         <el-scrollbar class="item-scrollbar" v-loading="project_list_loading">
           <div class="project-item" :class="current_project==item.name?'current-project':''" v-for="(item) in project_list" :key="item.id" @click="getProjectDocs(item.id,item.name)">
@@ -43,6 +43,11 @@
           <el-breadcrumb-item>{{current_project}}</el-breadcrumb-item>
           <el-breadcrumb-item>{{current_doc.name}}</el-breadcrumb-item>
         </el-breadcrumb>
+      </div>
+      <div class="doc-operate-btn">
+        <el-input v-model="current_doc.name" size="mini" style="width: 300px;padding-right:10px;" placeholder="请输入文档标题"></el-input>
+        <el-button type="normal" size="mini" v-if="isCreateDoc">发布文档</el-button>
+        <el-button type="normal" size="mini" v-if="isModifyDoc" @click="modifyDoc">保存修改</el-button>
       </div>
       <div class="editor">
         <textarea id="editor"></textarea>
@@ -93,6 +98,7 @@ export default {
       project_list : [],// 文集列表
       project_list_loading:true, // 文集列表是否加载
       current_project:"", // 当前文集
+      current_project_id:"", // 当前文集ID
       refresh_project_icon:"el-icon-refresh", 
       noDocList:true, // 文档列表状态
       current_doc_list : [], // 当前文档列表
@@ -103,7 +109,9 @@ export default {
       host_url:'',
       user_token : '',
       dialogCreateProjectVisible:false,// 新建文集弹出框可访问性
-      createProjectForm:{name:'',desc:'',role:'1'}
+      createProjectForm:{name:'',desc:'',role:'1'},
+      isCreateDoc:false,
+      isModifyDoc:false,
     }
   },
   watch: {
@@ -154,6 +162,7 @@ export default {
     getProjectDocs(id,name){
       this.doc_list_loading = true;
       this.current_project = name;
+      this.current_project_id = id;
       this.current_doc = ""
       this.noDoc = true;
       this.simplemde.value("");
@@ -186,6 +195,7 @@ export default {
             if(r.status){
                 this.current_doc = r.data;
                 this.doc_loading = false;
+                this.isModifyDoc = true;
                 this.simplemde.value(r.data.md_content);
             }else{
                 this.$message("获取文档失败")
@@ -234,6 +244,34 @@ export default {
           console.log(error)
         })
       }
+    },
+    // 修改文档
+    modifyDoc(){
+      let docData = new FormData();
+      docData['pid'] = this.current_project_id;
+      docData['did'] = this.current_doc.id;
+      docData['title'] = this.current_doc.name;
+      docData['doc'] = this.simplemde.value();
+      console.log(docData)
+      fetch(this.host_url + '/api/modify_doc/?token='+this.user_token,{
+        method:'POST',
+        mode:'cors',
+        body:docData
+      })
+      .then((r)=>{
+        return r.json()
+      })
+      .then(r=>{
+        console.log(r)
+        if(r.status){
+          this.$message({message:"修改成功",type:"success"})
+        }else{
+          this.$message({message:r.data,type:"error"})
+        }
+      })
+      .catch(error=>{
+        console.log(error)
+      })
     }
   },
   filters:{
@@ -291,8 +329,9 @@ export default {
     cursor: pointer;
   }
   .create-btn-div{
-    margin-bottom: 5px;
+    padding-bottom: 5px;
     text-align: center;
+    /* border-bottom: 2px #999999 solid; */
   }
   .project-list-bottom{
     margin-top: 5px;
@@ -323,16 +362,19 @@ export default {
     font-size: 14px;
     color: #999999;
   }
+  .doc-operate-btn{
+    margin-top: 10px;
+  }
   .editor-container{
     padding: 10px;
     height: 100%;
   }
   .editor{
-    margin-top: 15px;
-    height: calc(100% - 50px);
+    margin-top: 10px;
+    height: calc(100% - 80px);
   }
   .CodeMirror{
-    height: calc(100% - 50px);
+    height: calc(100% - 80px);
   }
   .CodeMirror .cm-spell-error:not(.cm-url):not(.cm-comment):not(.cm-tag):not(.cm-word){
     background: none;
