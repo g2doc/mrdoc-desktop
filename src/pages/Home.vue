@@ -248,10 +248,10 @@ export default {
     // 修改文档
     modifyDoc(){
       let docData = new FormData();
-      docData['pid'] = this.current_project_id;
-      docData['did'] = this.current_doc.id;
-      docData['title'] = this.current_doc.name;
-      docData['doc'] = this.simplemde.value();
+      docData.append('pid',this.current_project_id);
+      docData.append('did',this.current_doc.id);
+      docData.append('title',this.current_doc.name);
+      docData.append('doc',this.simplemde.value());
       console.log(docData)
       fetch(this.host_url + '/api/modify_doc/?token='+this.user_token,{
         method:'POST',
