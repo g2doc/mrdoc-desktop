@@ -2,6 +2,8 @@
 
 基于 Electron 开发的 MrDoc 桌面客户端。
 
+使用 MrDoc 「用户Token」API 接口与 MrDoc 进行对接，接口文档详见：[MrDoc用户TokenAPI](https://doc.mrdoc.pro/doc/389/)
+
 ## 项目初始化
 
 ```
