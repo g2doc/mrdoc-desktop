@@ -140,7 +140,7 @@ export default {
     },  
     // 获取文集列表
     getProjectList(){
-        fetch(this.host_url + '/api/get_projects/?token='+this.user_token)
+        fetch(this.host_url + '/api/get_projects/?sort=1&token='+this.user_token)
         .then((r)=>{
             return r.json()
         })
@@ -166,7 +166,7 @@ export default {
       this.current_doc = ""
       this.noDoc = true;
       this.simplemde.value("");
-      fetch(this.host_url + '/api/get_docs/?token='+this.user_token+"&pid="+id)
+      fetch(this.host_url + '/api/get_docs/?sort=1&token='+this.user_token+"&pid="+id)
         .then((r)=>{
             return r.json()
         })
@@ -247,18 +247,21 @@ export default {
     },
     // 修改文档
     modifyDoc(){
+      this.doc_loading = true;
       let docData = new FormData();
       docData.append('pid',this.current_project_id);
       docData.append('did',this.current_doc.id);
       docData.append('title',this.current_doc.name);
       docData.append('doc',this.simplemde.value());
       console.log(docData)
+      
       fetch(this.host_url + '/api/modify_doc/?token='+this.user_token,{
         method:'POST',
         mode:'cors',
         body:docData
       })
       .then((r)=>{
+        this.doc_loading = false;
         return r.json()
       })
       .then(r=>{
@@ -378,5 +381,9 @@ export default {
   }
   .CodeMirror .cm-spell-error:not(.cm-url):not(.cm-comment):not(.cm-tag):not(.cm-word){
     background: none;
+  }
+  /* simplemde 预览样式 */
+  .editor-preview-side>p, .editor-preview>p{
+    margin-bottom: 16px;
   }
 </style>

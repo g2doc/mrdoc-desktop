@@ -18,6 +18,7 @@
     "element-ui": "^2.15.6",
     "fs-extra": "^8.1.0",
     "less-loader": "^6.0.0",
+    "marked": "^3.0.8",
     "simplemde": "^1.11.2",
     "vue": "^2.6.11",
     "vue-router": "^3.5.3"
