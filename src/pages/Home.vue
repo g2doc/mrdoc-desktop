@@ -4,7 +4,14 @@
     <el-col :span="5" class="project-list-container">
         <div class="project-list-name">文集列表 <i class="refresh-project-list" :class="refresh_project_icon" @click="refreshProjectList()"></i></div>
         <div class="create-btn-div">
-          <el-button type="primary" size="small" round @click="dialogCreateProjectVisible = true">新建文集</el-button>
+          <el-input
+            v-model="search_project_kw"
+            placeholder="搜索文集"
+            prefix-icon="el-icon-search"
+            @keyup.enter.native="searchProject"
+            >
+          </el-input>
+          <el-button style="margin-left:5px;" icon="el-icon-plus" circle type="primary" @click="dialogCreateProjectVisible = true"></el-button>
         </div>
         <el-scrollbar class="item-scrollbar" v-loading="project_list_loading">
           <div class="project-item" :class="current_project==item.name?'current-project':''" v-for="(item) in project_list" :key="item.id" @click="getProjectDocs(item.id,item.name)">
@@ -24,6 +31,7 @@
             v-model="search_doc_kw"
             placeholder="搜索文档"
             prefix-icon="el-icon-search"
+            @keyup.enter.native="searchDoc"
             >
           </el-input>
           <el-button style="margin-left:5px;" icon="el-icon-plus" circle @click="createDoc"></el-button>
@@ -108,6 +116,7 @@ export default {
       doc_loading:false,
       noDoc:true, // 文档状态
       search_doc_kw:'',
+      search_project_kw:'',
       host_url:'',
       user_token : '',
       dialogCreateProjectVisible:false,// 新建文集弹出框可访问性
@@ -216,6 +225,7 @@ export default {
             if(r.status){
                 this.current_doc = r.data;
                 this.doc_loading = false;
+                this.isCreateDoc = false;
                 this.isModifyDoc = true;
                 this.simplemde.value(r.data.md_content);
             }else{
@@ -337,7 +347,15 @@ export default {
       .catch(error=>{
         console.log(error)
       })
-    }
+    },
+    // 搜索文集
+    searchProject(){
+
+    },
+    // 搜索文档
+    searchDoc(){
+
+    },
   },
   filters:{
     // 日期格式化
@@ -394,6 +412,8 @@ export default {
     cursor: pointer;
   }
   .create-btn-div{
+    display: flex;
+    justify-content: space-between;
     padding-bottom: 5px;
     text-align: center;
     /* border-bottom: 2px #999999 solid; */
