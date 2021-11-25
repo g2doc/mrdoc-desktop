@@ -5,7 +5,6 @@
         <div class="project-list-name">文集列表 <i class="refresh-project-list" :class="refresh_project_icon" @click="refreshProjectList()"></i></div>
         <div class="create-btn-div">
           <el-button type="primary" size="small" round @click="dialogCreateProjectVisible = true">新建文集</el-button>
-          <!-- <el-button type="primary" size="small" round>新建文档</el-button> -->
         </div>
         <el-scrollbar class="item-scrollbar" v-loading="project_list_loading">
           <div class="project-item" :class="current_project==item.name?'current-project':''" v-for="(item) in project_list" :key="item.id" @click="getProjectDocs(item.id,item.name)">
@@ -22,13 +21,15 @@
     <el-col :span="6" class="doc-list-container" v-loading="doc_list_loading" v-else>
         <div class="doc-search-input">
           <el-input
+            v-model="search_doc_kw"
             placeholder="搜索文档"
             prefix-icon="el-icon-search"
             >
           </el-input>
+          <el-button style="margin-left:5px;" icon="el-icon-plus" circle @click="createDoc"></el-button>
         </div>
         <el-scrollbar class="item-scrollbar">
-          <div v-for="(item) in current_doc_list" :key="item.id" class="doc-item" @click="getDoc(item.id)">
+          <div v-for="(item) in current_doc_list" :key="item.id" :class="current_doc.id==item.id?'current-doc':''" class="doc-item" @click="getDoc(item.id)">
             <i class="el-icon-tickets"></i>
               {{item.name}}
             <div class="doc-item-time">{{item.create_time | dateFomart}}</div>
@@ -46,7 +47,7 @@
       </div>
       <div class="doc-operate-btn">
         <el-input v-model="current_doc.name" size="mini" style="width: 300px;padding-right:10px;" placeholder="请输入文档标题"></el-input>
-        <el-button type="normal" size="mini" v-if="isCreateDoc">发布文档</el-button>
+        <el-button type="normal" size="mini" v-if="isCreateDoc" @click="pubDoc">发布文档</el-button>
         <el-button type="normal" size="mini" v-if="isModifyDoc" @click="modifyDoc">保存修改</el-button>
       </div>
       <div class="editor">
@@ -106,6 +107,7 @@ export default {
       current_doc:"", // 当前文档
       doc_loading:false,
       noDoc:true, // 文档状态
+      search_doc_kw:'',
       host_url:'',
       user_token : '',
       dialogCreateProjectVisible:false,// 新建文集弹出框可访问性
@@ -183,6 +185,25 @@ export default {
             this.$message("获取文档列表异常!")
         })
     },
+    // 刷新当前文集的文档列表
+    refreshDocs(){
+      fetch(this.host_url + '/api/get_docs/?sort=1&token='+this.user_token+"&pid="+this.current_project_id)
+      .then((r)=>{
+          return r.json()
+      })
+      .then(r=>{
+          console.log(r)
+          if(r.status){
+              this.current_doc_list = r.data;
+              this.doc_list_loading = false;
+              this.noDocList = false;
+          }else{
+              this.$message("获取文档列表失败")
+          }
+      }).catch(()=>{
+          this.$message("获取文档列表异常!")
+      })
+    },
     // 获取文档内容
     getDoc(id){
       this.doc_loading = true;
@@ -244,6 +265,47 @@ export default {
           console.log(error)
         })
       }
+    },
+    // 新建文档
+    createDoc(){
+      this.isCreateDoc = true;
+      this.isModifyDoc = false;
+      this.current_doc = {name:'',pre_content:'这里写文档'}
+      this.simplemde.value("");
+    },
+    // 发布文档
+    pubDoc(){
+      this.doc_loading = true;
+      let docData = new FormData();
+      docData.append('pid',this.current_project_id);
+      docData.append('title',this.current_doc.name);
+      docData.append('doc',this.simplemde.value());
+      console.log(docData)
+      
+      fetch(this.host_url + '/api/create_doc/?token='+this.user_token,{
+        method:'POST',
+        mode:'cors',
+        body:docData
+      })
+      .then((r)=>{
+        this.doc_loading = false;
+        return r.json()
+      })
+      .then(r=>{
+        console.log(r)
+        if(r.status){
+          this.isCreateDoc = false;
+          this.isModifyDoc = true;
+          this.current_doc.id = r.data;
+          this.refreshDocs();
+          this.$message({message:"发布成功",type:"success"})
+        }else{
+          this.$message({message:r.data,type:"error"})
+        }
+      })
+      .catch(error=>{
+        console.log(error)
+      })
     },
     // 修改文档
     modifyDoc(){
@@ -352,11 +414,16 @@ export default {
   }
   .doc-search-input{
     margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
   }
   .doc-item{
     border-bottom: 1px #f5f5f5 solid;
     padding: 5px;
     cursor: pointer;
+  }
+  .current-doc{
+    font-weight: 700;
   }
   .doc-item:hover{
     background-color: #f5f5f5;
