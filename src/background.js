@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, Menu, shell } from 'electron'
+import { app, protocol, BrowserWindow, Menu, shell, dialog } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -44,7 +44,7 @@ async function createWindow() {
         {
           label:"退出",
           click(){
-            app.quit()
+            win.close();
           }
         }
       ]
@@ -91,6 +91,26 @@ async function createWindow() {
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
   }
+
+  // 侦听关闭事件，弹出确认框
+  win.on('close',(e)=>{
+    console.log("关闭事件")
+    e.preventDefault();
+    dialog.showMessageBox({
+      type:'info',
+      title:"提示",
+      defaultId:0,
+      message:"确定要退出程序？",
+      buttons:['取消','退出'],
+    })
+    .then((index)=>{
+      console.log(index)
+      if(index.response === 1){
+        // win = null;
+        app.exit();
+      }
+    })
+  })
 }
 
 // Quit when all windows are closed.
