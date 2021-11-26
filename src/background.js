@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow, Menu } from 'electron'
+import { app, protocol, BrowserWindow, Menu, shell } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -53,6 +53,12 @@ async function createWindow() {
       label:"帮助",
       submenu:[
         {
+          label:"官网",
+          click(){
+            shell.openExternal("https://mrdoc.pro")
+          }
+        },
+        {
           label:"检查更新",
           click(){
             
@@ -61,7 +67,7 @@ async function createWindow() {
         {
           label:"问题反馈",
           click(){
-
+            shell.openExternal("http://shang.qq.com/wpa/qunwpa?idkey=143c23a4ffbd0ba9137d2bce3ee86c83532c05259a0542a69527e36615e64dba")
           }
         },
         {
