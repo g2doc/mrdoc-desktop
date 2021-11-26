@@ -279,9 +279,12 @@ export default {
     // 新建文档
     createDoc(){
       this.isCreateDoc = true;
-      this.isModifyDoc = false;
+      if(this.isModifyDoc){
+        this.isModifyDoc = false;
+        this.simplemde.value("");
+      }
       this.current_doc = {name:'',pre_content:'这里写文档'}
-      this.simplemde.value("");
+      
     },
     // 发布文档
     pubDoc(){
