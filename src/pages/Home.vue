@@ -12,7 +12,9 @@
             @keyup.enter.native="searchProject"
             >
           </el-input>
-          <el-button style="margin-left:5px;" size="small" icon="el-icon-plus" circle type="primary" @click="dialogCreateProjectVisible = true"></el-button>
+          <el-tooltip class="item" effect="dark" content="新建文集" placement="bottom">
+            <el-button style="margin-left:5px;" size="small" icon="el-icon-plus" circle type="primary" @click="dialogCreateProjectVisible = true"></el-button>
+          </el-tooltip>
         </div>
         <el-scrollbar class="item-scrollbar" v-loading="project_list_loading">
           <div class="project-item" :class="current_project==item.name?'current-project':''" v-for="(item) in project_list" :key="item.id" @click="getProjectDocs(item.id,item.name)">
@@ -36,7 +38,9 @@
             @keyup.enter.native="searchDoc"
             >
           </el-input>
-          <el-button style="margin-left:5px;" size="small" icon="el-icon-plus" circle @click="createDoc"></el-button>
+          <el-tooltip class="item" effect="dark" content="新建文档" placement="bottom">
+            <el-button style="margin-left:5px;" size="small" icon="el-icon-plus" circle @click="createDoc"></el-button>
+          </el-tooltip>
         </div>
         <el-scrollbar class="item-scrollbar">
           <div v-for="(item) in current_doc_list" :key="item.id" :class="current_doc.id==item.id?'current-doc':''" class="doc-item" @click="getDoc(item.id)">
