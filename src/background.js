@@ -14,12 +14,13 @@ async function createWindow() {
   // Create the browser window.
   // 创建浏览器窗口
   const win = new BrowserWindow({
+    title:"MrDoc桌面客户端",
     width: 800,
     height: 600,
     minWidth: 800,
     minHeight: 600,
+    icon: 'resources/icon/logo.png',
     webPreferences: {
-      
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
@@ -27,7 +28,7 @@ async function createWindow() {
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
       // contextIsolation:false,
       enableRemoteModule: true,
-    }
+    },
   })
 
   // 创建菜单
@@ -100,7 +101,7 @@ async function createWindow() {
       type:'info',
       title:"提示",
       defaultId:0,
-      message:"确定要退出程序？",
+      message:"确定要退出MrDoc桌面客户端？",
       buttons:['取消','退出'],
     })
     .then((index)=>{

@@ -2,7 +2,13 @@
   "name": "mrdoc-desktop",
   "version": "0.1.0",
   "private": true,
-  "appId":"pro.mrdoc.desktop",
+  "author": {
+    "name": "zmister",
+    "email": "zmister@qq.com",
+    "url": "https://mrdoc.pro"
+  },
+  "description": "MrDoc 的桌面客户端程序。",
+  "appId": "pro.mrdoc.desktop",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
