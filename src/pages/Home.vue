@@ -7,11 +7,12 @@
           <el-input
             v-model="search_project_kw"
             placeholder="搜索文集"
+            size="small"
             prefix-icon="el-icon-search"
             @keyup.enter.native="searchProject"
             >
           </el-input>
-          <el-button style="margin-left:5px;" icon="el-icon-plus" circle type="primary" @click="dialogCreateProjectVisible = true"></el-button>
+          <el-button style="margin-left:5px;" size="small" icon="el-icon-plus" circle type="primary" @click="dialogCreateProjectVisible = true"></el-button>
         </div>
         <el-scrollbar class="item-scrollbar" v-loading="project_list_loading">
           <div class="project-item" :class="current_project==item.name?'current-project':''" v-for="(item) in project_list" :key="item.id" @click="getProjectDocs(item.id,item.name)">
@@ -30,11 +31,12 @@
           <el-input
             v-model="search_doc_kw"
             placeholder="搜索文档"
+            size="small"
             prefix-icon="el-icon-search"
             @keyup.enter.native="searchDoc"
             >
           </el-input>
-          <el-button style="margin-left:5px;" icon="el-icon-plus" circle @click="createDoc"></el-button>
+          <el-button style="margin-left:5px;" size="small" icon="el-icon-plus" circle @click="createDoc"></el-button>
         </div>
         <el-scrollbar class="item-scrollbar">
           <div v-for="(item) in current_doc_list" :key="item.id" :class="current_doc.id==item.id?'current-doc':''" class="doc-item" @click="getDoc(item.id)">
@@ -353,11 +355,40 @@ export default {
     },
     // 搜索文集
     searchProject(){
-
+      if(this.search_project_kw == ''){
+        this.getProjectList();
+      }else{
+        var search_project_list = [];
+        for(let i = 0;i < this.project_list.length; i ++){
+          if(this.project_list[i].name.indexOf(this.search_project_kw) != -1){
+            console.log(this.project_list[i].name)
+            search_project_list.push(this.project_list[i])
+          }
+        }
+        if(search_project_list.length == 0){
+          console.log("无搜索结果")
+        }else{
+          this.project_list = search_project_list;
+        }
+      }
     },
     // 搜索文档
     searchDoc(){
-
+      if(this.search_doc_kw == ''){
+        this.getProjectDocs(this.current_project_id,this.current_project);
+      }else{
+        var search_doc_list = [];
+        for(let i = 0;i < this.current_doc_list.length; i ++){
+          if(this.current_doc_list[i].name.indexOf(this.search_doc_kw) != -1){
+            search_doc_list.push(this.current_doc_list[i])
+          }
+        }
+        if(search_doc_list.length == 0){
+          console.log("无搜索结果")
+        }else{
+          this.current_doc_list = search_doc_list;
+        }
+      }
     },
   },
   filters:{
