@@ -154,6 +154,18 @@ export default {
       this.simplemde = new SimpleMDE({
         element: document.getElementById("editor")
       });
+      const codemirror = this.simplemde.codemirror;
+      const keys = codemirror.getOption("extraKeys");
+      keys["Ctrl-S"] = () => { //work on 'ctrl+s'
+        if(this.isModifyDoc){
+          this.modifyDoc();
+        }else if(this.isCreateDoc){
+          this.pubDoc();
+        }else{
+          console.log("无响应")
+        }
+      };
+      codemirror.setOption("extraKeys", keys);
     },  
     // 获取文集列表
     getProjectList(){
