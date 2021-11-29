@@ -110,6 +110,8 @@ export default {
   data() {
     return {
       store:new Store(),
+      is_cache_doc:false,
+      timer:'',
       project_list : [],// 文集列表
       project_list_loading:true, // 文集列表是否加载
       current_project:"", // 当前文集
@@ -136,8 +138,14 @@ export default {
   },
   mounted() {
     this.init();
+    this.timer = setInterval(() => {
+      this.autoCache();
+    }, 30000);
     // 设置是否渲染输入的html
     marked.setOptions({sanitize: true});
+  },
+  beforeDestroy() {
+    clearInterval(this.timer);
   },
   methods: {
     // 页面初始化
@@ -145,6 +153,8 @@ export default {
         // 读取配置 
         this.host_url = this.store.get('mrdocUrl');
         this.user_token = this.store.get('mrdocUserToken');
+        this.is_cache_doc = this.store.get('isCacheDoc');
+        // 判断是否存在MrDoc配置，不存在则跳转到配置页面
         if(this.store.get('mrdocUrl') === ''){
           this.$router.push({'name':"Options"})
         }
@@ -156,7 +166,7 @@ export default {
       // 实例化编辑器
       this.simplemde = new SimpleMDE({
         element: document.getElementById("editor")
-      });
+      },{autosave:true});
       const codemirror = this.simplemde.codemirror;
       const keys = codemirror.getOption("extraKeys");
       keys["Ctrl-S"] = () => { //work on 'ctrl+s'
@@ -169,6 +179,11 @@ export default {
         }
       };
       codemirror.setOption("extraKeys", keys);
+      // 判断是否存在文档缓存，如果存在则设置编辑器的内容
+      let doc_cache = this.store.get('cache_doc')
+      if(doc_cache != '' && doc_cache != undefined){
+        this.simplemde.value(doc_cache)
+      }
     },  
     // 获取文集列表
     getProjectList(){
@@ -407,6 +422,13 @@ export default {
         }else{
           this.current_doc_list = search_doc_list;
         }
+      }
+    },
+    // 自动缓存
+    autoCache(){
+      // console.log(this.is_cache_doc)
+      if(this.is_cache_doc){
+        this.store.set('cache_doc',this.simplemde.value())
       }
     },
   },

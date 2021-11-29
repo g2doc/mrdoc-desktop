@@ -12,6 +12,13 @@
             <el-form-item label="用户 Token">
                 <el-input v-model="form.mrdocUserToken"></el-input>
             </el-form-item>
+            <el-form-item label="文档缓存">
+                <el-switch
+                    v-model="form.isCacheDoc"
+                    active-value=true
+                    inactive-value=false >
+                </el-switch>
+            </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="checkToken">验证</el-button>
                 <el-button type="primary" @click="onSubmit">保存</el-button>
@@ -25,11 +32,12 @@
   export default {
     data() {
       return {
+        store:new Store(),
         form: {
           mrdocUrl: '',
           mrdocUserToken: '',
+          isCacheDoc:false,
         },
-        store:new Store()
       }
     },
     mounted(){
@@ -41,13 +49,19 @@
             // const store = new Store();
             this.form.mrdocUrl = this.store.get('mrdocUrl');
             this.form.mrdocUserToken = this.store.get('mrdocUserToken');
-            console.log(this.mrdocUrl)
+            this.form.isCacheDoc = this.store.get('isCacheDoc',false);
+            console.log(this.form)
         },
       // 保存配置
       onSubmit() {
         console.log('submit!');
         this.store.set('mrdocUrl',this.form.mrdocUrl);
         this.store.set('mrdocUserToken',this.form.mrdocUserToken);
+        this.store.set('isCacheDoc',this.form.isCacheDoc);
+        if(this.form.isCacheDoc === 'false'){
+            console.log("清空缓存")
+            this.store.set('cache_doc','');
+        }
         this.$message({message:"保存成功！",type: 'success'})
       },
       // 验证配置
