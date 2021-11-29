@@ -137,7 +137,7 @@ export default {
   mounted() {
     this.init();
     // 设置是否渲染输入的html
-      marked.setOptions({sanitize: true});
+    marked.setOptions({sanitize: true});
   },
   methods: {
     // 页面初始化
@@ -145,6 +145,9 @@ export default {
         // 读取配置 
         this.host_url = this.store.get('mrdocUrl');
         this.user_token = this.store.get('mrdocUserToken');
+        if(this.store.get('mrdocUrl') === ''){
+          this.$router.push({'name':"Options"})
+        }
         this.getProjectList();
         this.initEditor();
     },
