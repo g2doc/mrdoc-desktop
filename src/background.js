@@ -34,7 +34,7 @@ async function createWindow() {
   // 创建菜单
   const MenuItem = [
     {
-      label:"文件",
+      label:"选项",
       submenu:[
         {
           label:"配置",
