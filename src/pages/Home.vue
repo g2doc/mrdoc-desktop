@@ -64,7 +64,7 @@
         <el-button type="normal" size="mini" v-if="isCreateDoc" @click="pubDoc">发布文档</el-button>
         <el-button type="normal" size="mini" v-if="isModifyDoc" @click="modifyDoc">保存修改</el-button>
       </div>
-      <div class="editor">
+      <div class="editor" v-on:paste="handlePaste">
         <textarea id="editor"></textarea>
       </div>
     </el-col>
@@ -431,6 +431,50 @@ export default {
         this.store.set('cache_doc',this.simplemde.value())
       }
     },
+    // 粘贴事件处理
+    handlePaste(event) {
+      // var data = ev.clipboardData;
+      var that = this;
+      var items = (event.clipboardData || event.originalEvent.clipboardData).items;
+      for (var index in items) {
+          var item = items[index];
+          if (item.kind === 'file') {
+              var blob = item.getAsFile();
+              // console.log(blob)
+              var reader = new FileReader();
+              reader.onload = function (event) {
+                  let formData = new FormData();
+                  var base64 = event.target.result;
+                  formData.append('data',base64)
+                  //ajax上传图片
+                  fetch(that.host_url + '/api/upload_img/?token='+that.user_token,{
+                    method:'POST',
+                    mode:'cors',
+                    body:formData
+                  })
+                  .then((r)=>{
+                    return r.json()
+                  })
+                  .then(r=>{
+                    console.log(r)
+                    if(r.success == 1){
+                      that.simplemde.codemirror.replaceSelection("\n![](" + r.url + ")")
+                      that.simplemde.codemirror.focus()
+                      that.$message({message:"图片上传成功",type:"success"})
+                    }else{
+                      that.$message({message:r.message,type:"error"})
+                    }
+                  })
+                  .catch(error=>{
+                    console.log(error)
+                  })
+              }; // data url!
+              // var url = reader.readAsDataURL(blob);
+              reader.readAsDataURL(blob);
+          }
+      }
+    },
+
   },
   filters:{
     // 日期格式化
