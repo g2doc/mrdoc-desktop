@@ -15,10 +15,10 @@ async function createWindow() {
   // 创建浏览器窗口
   const win = new BrowserWindow({
     title:"MrDoc桌面客户端",
-    width: 800,
-    height: 600,
-    minWidth: 800,
-    minHeight: 600,
+    width: 1000,
+    height: 800,
+    minWidth: 1000,
+    minHeight: 800,
     icon: 'resources/icon/logo.png',
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
