@@ -28,6 +28,7 @@ async function createWindow() {
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
       // contextIsolation:false,
       enableRemoteModule: true,
+      webSecurity:false,
     },
   })
 
