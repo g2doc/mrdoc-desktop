@@ -153,7 +153,7 @@ export default {
         // 读取配置 
         this.host_url = this.store.get('mrdocUrl');
         this.user_token = this.store.get('mrdocUserToken');
-        this.is_cache_doc = this.store.get('isCacheDoc');
+        this.is_cache_doc = this.store.get('isCacheDoc')=='true'?true:false;
         // 判断是否存在MrDoc配置，不存在则跳转到配置页面
         if(this.store.get('mrdocUrl') === ''){
           this.$router.push({'name':"Options"})

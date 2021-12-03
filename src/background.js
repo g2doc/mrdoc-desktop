@@ -35,12 +35,24 @@ async function createWindow() {
   // 创建菜单
   const MenuItem = [
     {
-      label:"选项",
+      label:"文件",
       submenu:[
         {
-          label:"配置",
+          label:"上传本地图片",
           click(){
-            win.webContents.send('href','Options')
+            
+          }
+        },
+        {
+          label:"上传本地Markdown",
+          click(){
+            
+          }
+        },
+        {
+          label:"上传本地Word",
+          click(){
+            
           }
         },
         {
@@ -49,6 +61,17 @@ async function createWindow() {
             win.close();
           }
         }
+      ]
+    },
+    {
+      label:"选项",
+      submenu:[
+        {
+          label:"配置",
+          click(){
+            win.webContents.send('href','Options')
+          }
+        },
       ]
     },
     {
