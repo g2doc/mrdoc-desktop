@@ -19,13 +19,13 @@ npm install
 ## 运行项目
 
 ```
-npm run electron.serve
+npm run electron:serve
 ```
 
 或
 
 ```
-yarn run electron.serve
+yarn run electron:serve
 ```
 
 ## 打包项目
